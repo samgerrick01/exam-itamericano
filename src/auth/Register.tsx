@@ -6,7 +6,6 @@ import {
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -15,45 +14,64 @@ import {
   View,
 } from "react-native";
 import app from "../../firebaseConfig";
+import Modal from "../app/components/reusable-modal";
+import { IModalProps } from "../app/utils/interface";
 import { LoginProps } from "./Login";
 
 export default function Register({ navigation }: LoginProps) {
+  //local state
   const [loading, setLoading] = useState(false);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
-
+  //Modal state
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<IModalProps>({
+    title: "",
+    children: "",
+    confirmModal: false,
+  });
+  //register user function
   async function registerUser() {
     setLoading(true);
-
-    try {
-      const auth = getAuth(app);
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      await updateProfile(response.user, { displayName: userName });
+    if (!email || !password || !userName) {
       setLoading(false);
-      Alert.alert(
-        "Success",
-        "Account created successfully please login to continue.",
-        [
-          {
-            text: "Okay",
-            onPress: () => navigation.navigate("login"),
-          },
-        ]
-      );
-    } catch (error: any) {
-      setLoading(false);
-      Alert.alert("Something went wrong", error.message);
+      setModalData({
+        title: "Ooops!",
+        children: "Please fill in all fields.",
+        confirmModal: false,
+      });
+      setOpenModal(true);
+    } else {
+      try {
+        const auth = getAuth(app);
+        const response = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        await updateProfile(response.user, { displayName: userName });
+        setLoading(false);
+        setModalData({
+          title: "Success",
+          children: "Account created successfully please login to continue.",
+          confirmModal: true,
+          okAction: () => navigation.navigate("login"),
+        });
+        setOpenModal(true);
+      } catch (error: any) {
+        setLoading(false);
+        setModalData({
+          title: "Ooops!",
+          children: error.message,
+          confirmModal: false,
+        });
+        setOpenModal(true);
+      }
     }
   }
   return (
     <View style={styles.container}>
-      {/* <StatusBar style="auto" /> */}
       <Image
         source={require("../../assets/todo_banner.jpg")}
         style={styles.logo}
@@ -100,6 +118,13 @@ export default function Register({ navigation }: LoginProps) {
           login
         </Text>
       </View>
+      <Modal
+        props={{
+          openModal,
+          setOpenModal,
+          ...modalData,
+        }}
+      />
     </View>
   );
 }

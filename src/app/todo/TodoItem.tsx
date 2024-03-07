@@ -2,16 +2,17 @@ import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Timestamp } from "firebase/firestore";
 import React, { useContext, useState } from "react";
 import {
-  Alert,
   Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Modal from "../components/reusable-modal";
 import { deleteMyTodoItem } from "../firebase/firestore/delete";
 import { updatePrioItem, updateStatusItem } from "../firebase/firestore/update";
 import { DataContext } from "../utils/Context";
+import { IModalProps } from "../utils/interface";
 
 //interface for the todo item
 export interface TodoItemProps {
@@ -43,6 +44,14 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
   const [priority, setPriority] = useState<boolean>(isPriority);
   const [completed, setCompleted] = useState<boolean>(isCompleted);
 
+  //Modal state
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<IModalProps>({
+    title: "",
+    children: "",
+    confirmModal: false,
+  });
+
   //context
   const { tasks, setTasks } = useContext(DataContext);
 
@@ -56,7 +65,12 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       setPriority(!priority);
       await updatePrioItem(docId, !isPriority);
     } catch (error: any) {
-      Alert.alert("Something went wrong", error.message);
+      setModalData({
+        title: "Ooops!",
+        children: error.message,
+        confirmModal: false,
+      });
+      setOpenModal(true);
     }
   };
 
@@ -70,7 +84,12 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       setCompleted(!completed);
       await updateStatusItem(docId, !isCompleted);
     } catch (error: any) {
-      Alert.alert("Something went wrong", error.message);
+      setModalData({
+        title: "Ooops!",
+        children: error.message,
+        confirmModal: false,
+      });
+      setOpenModal(true);
     }
   };
 
@@ -88,7 +107,12 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       setTasks(updatedTasks);
       await deleteMyTodoItem(docId);
     } catch (error: any) {
-      Alert.alert("Something went wrong", error.message);
+      setModalData({
+        title: "Ooops!",
+        children: error.message,
+        confirmModal: false,
+      });
+      setOpenModal(true);
     }
   };
 
@@ -97,14 +121,14 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       <TouchableOpacity
         style={styles.row}
         onLongPress={() => {
-          Alert.alert(
-            "Alert",
-            "You are trying to delete this todo, Would you like to continue?",
-            [
-              { text: "Cancel", onPress: () => null },
-              { text: "Delete", style: "destructive", onPress: deleteMyTodo },
-            ]
-          );
+          setModalData({
+            title: "Delete Todo?",
+            children:
+              "You are trying to delete this todo, Would you like to continue?",
+            confirmModal: true,
+            okAction: deleteMyTodo,
+          });
+          setOpenModal(true);
         }}
       >
         <Pressable onPress={checkAsPrio}>
@@ -140,6 +164,13 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
           />
         </View>
       </TouchableOpacity>
+      <Modal
+        props={{
+          openModal,
+          setOpenModal,
+          ...modalData,
+        }}
+      />
     </View>
   );
 }

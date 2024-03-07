@@ -4,7 +4,6 @@ import { getAuth } from "firebase/auth";
 import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
   View,
 } from "react-native";
 import app from "../../firebaseConfig";
+import Modal from "./components/reusable-modal";
 import { createTodoTask } from "./firebase/firestore/create";
 import { fetchOnlyMyTodoList } from "./firebase/firestore/read";
 import { updateItemText } from "./firebase/firestore/update";
@@ -20,6 +20,7 @@ import Empty from "./todo/Empty";
 import TodoItem from "./todo/TodoItem";
 import { DataContext } from "./utils/Context";
 import { sortItemsByPrio } from "./utils/SortTodos";
+import { IModalProps } from "./utils/interface";
 
 export interface LoginProps {
   navigation: NavigationProp<any>;
@@ -39,6 +40,14 @@ export default function HomeScreen({ navigation }: LoginProps) {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editID, setEditID] = useState<string>("");
 
+  //Modal state
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<IModalProps>({
+    title: "",
+    children: "",
+    confirmModal: false,
+  });
+
   //memoized value
   const sortedTodos = useMemo(() => {
     return sortItemsByPrio(tasks);
@@ -47,10 +56,13 @@ export default function HomeScreen({ navigation }: LoginProps) {
   // add and edit task function
   async function addToList() {
     if (todo.length < 3) {
-      return alert("Task must be at least 3 characters long");
-    }
-
-    if (isEdit && editID && todo !== "") {
+      setModalData({
+        title: "Ooops!",
+        children: "Task must be at least 3 characters long.",
+        confirmModal: false,
+      });
+      setOpenModal(true);
+    } else if (isEdit && editID && todo !== "") {
       try {
         setLoading(true);
         const index = tasks.findIndex((task) => task.docId === editID);
@@ -63,7 +75,12 @@ export default function HomeScreen({ navigation }: LoginProps) {
         setEditID("");
         setTodo("");
       } catch (error: any) {
-        Alert.alert("Something went wrong", error.message);
+        setModalData({
+          title: "Ooops!",
+          children: error.message,
+          confirmModal: false,
+        });
+        setOpenModal(true);
       } finally {
         setLoading(false);
       }
@@ -86,7 +103,13 @@ export default function HomeScreen({ navigation }: LoginProps) {
         };
         setTasks(() => [todoItem, ...tasks]);
         setTodo("");
-      } catch (error) {
+      } catch (error: any) {
+        setModalData({
+          title: "Ooops!",
+          children: error.message,
+          confirmModal: false,
+        });
+        setOpenModal(true);
       } finally {
         setLoading(false);
       }
@@ -95,19 +118,16 @@ export default function HomeScreen({ navigation }: LoginProps) {
 
   //logout function
   const logOut = () => {
-    Alert.alert("Log Out", "Are you sure you want to log out?", [
-      {
-        text: "Yes",
-        onPress: () => {
-          getAuth(app).signOut();
-          navigation.dispatch(StackActions.replace("login"));
-        },
+    setModalData({
+      title: "Log Out",
+      children: "Are you sure you want to log out?",
+      confirmModal: true,
+      okAction: () => {
+        getAuth(app).signOut();
+        navigation.dispatch(StackActions.replace("login"));
       },
-      {
-        text: "No",
-        onPress: () => {},
-      },
-    ]);
+    });
+    setOpenModal(true);
   };
 
   //fetch data from firestore
@@ -181,8 +201,17 @@ export default function HomeScreen({ navigation }: LoginProps) {
           contentContainerStyle={styles.content}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           showsVerticalScrollIndicator={false}
+          onRefresh={getMyTodosInDB}
+          refreshing={getLoading}
         />
       )}
+      <Modal
+        props={{
+          openModal,
+          setOpenModal,
+          ...modalData,
+        }}
+      />
     </View>
   );
 }
