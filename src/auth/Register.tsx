@@ -1,21 +1,21 @@
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import React, { useState } from "react";
-import { LoginProps } from "./Login";
-import {
   createUserWithEmailAndPassword,
   getAuth,
   updateProfile,
 } from "firebase/auth";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import app from "../../firebaseConfig";
+import { LoginProps } from "./Login";
 
 export default function Register({ navigation }: LoginProps) {
   const [loading, setLoading] = useState(false);

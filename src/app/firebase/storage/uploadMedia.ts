@@ -1,26 +1,26 @@
+import dayjs from "dayjs";
+import { ImagePickerAsset } from "expo-image-picker";
+import { getAuth } from "firebase/auth";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
-} from 'firebase/storage';
-import app from '../../../../firebaseConfig';
-import { getAuth } from 'firebase/auth';
-import dayjs from 'dayjs';
-import { ImagePickerAsset } from 'expo-image-picker';
-import { addDoc, collection, getFirestore } from 'firebase/firestore';
+} from "firebase/storage";
+import app from "../../../../firebaseConfig";
 
 const storage = getStorage(app);
 const db = getFirestore(app);
 
 async function uploadMediaToStorageBucket(
   uri: string,
-  fileType: 'video' | 'image' | undefined
+  fileType: "video" | "image" | undefined
 ) {
   const user = getAuth(app).currentUser;
   if (!user) return;
 
-  const fileName = dayjs().format('YYYY-MM-DD_HH-mm-ss');
+  const fileName = dayjs().format("YYYY-MM-DD_HH-mm-ss");
 
   const storageRef = ref(storage, `media/${user.uid}/${fileName}`);
 
@@ -36,9 +36,9 @@ async function uploadMediaToStorageBucket(
 
     return new Promise((resolve, reject) => {
       upload.on(
-        'state_changed',
+        "state_changed",
         (snapshot) => {
-          console.log(snapshot.bytesTransferred, '/', snapshot.totalBytes);
+          console.log(snapshot.bytesTransferred, "/", snapshot.totalBytes);
         },
         (error) => reject(error),
         () => {
@@ -59,7 +59,7 @@ export interface CloudImage {
   fileUrl: string;
   fileName: string;
   ownerId: string;
-  fileType: 'video' | 'image' | undefined;
+  fileType: "video" | "image" | undefined;
 }
 
 export async function bulkMediaUpload(media: ImagePickerAsset[]) {
@@ -80,7 +80,7 @@ export async function bulkMediaUpload(media: ImagePickerAsset[]) {
 }
 
 export async function saveUploadedMediaData(data: CloudImage[]) {
-  const mediaRef = collection(db, 'media');
+  const mediaRef = collection(db, "media");
   for (let i = 0; i < data.length; i++) {
     try {
       await addDoc(mediaRef, data[i]);

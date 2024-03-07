@@ -1,3 +1,5 @@
+import { ResizeMode, Video } from "expo-av";
+import React, { useContext, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -6,12 +8,10 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import React, { useContext, useRef, useState } from 'react';
-import { CloudImage } from '../firebase/storage/uploadMedia';
-import { ResizeMode, Video } from 'expo-av';
-import { deleteFileFromDB } from '../firebase/storage/deleteFile';
-import { DataContext } from '../utils/Context';
+} from "react-native";
+import { deleteFileFromDB } from "../firebase/storage/deleteFile";
+import { CloudImage } from "../firebase/storage/uploadMedia";
+import { DataContext } from "../utils/Context";
 
 interface MediaItemProps extends CloudImage {
   docId: string;
@@ -38,7 +38,7 @@ export default function MediaItem({
       const remainingData = media.filter((m) => m.fileName !== fileName);
       setMedia(remainingData);
     } catch (error: any) {
-      Alert.alert('Something went wrong', error.message);
+      Alert.alert("Something went wrong", error.message);
     } finally {
       setDeleting(false);
     }
@@ -46,7 +46,7 @@ export default function MediaItem({
 
   return (
     <View style={styles.row}>
-      {fileType === 'video' ? (
+      {fileType === "video" ? (
         <Pressable onPress={playVideo}>
           <Video
             source={{ uri: fileUrl }}
@@ -66,7 +66,7 @@ export default function MediaItem({
       )}
       <View style={styles.content}>
         <Pressable style={styles.delete} onPress={deleteFile}>
-          <Text style={{ color: 'teal' }}>
+          <Text style={{ color: "teal" }}>
             {deleting ? (
               <ActivityIndicator animating={deleting} color="teal" />
             ) : (
@@ -82,20 +82,20 @@ export default function MediaItem({
 const styles = StyleSheet.create({
   delete: {
     borderWidth: 1.5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 8,
-    borderColor: 'teal',
+    borderColor: "teal",
     borderRadius: 8,
   },
   content: {
     marginTop: 10,
   },
   video: {
-    width: '100%',
+    width: "100%",
     height: 120,
     borderRadius: 10,
-    backgroundColor: 'silver',
+    backgroundColor: "silver",
   },
   row: {
     // paddingBottom: 10,

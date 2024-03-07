@@ -1,9 +1,9 @@
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "../../shared/Button";
-import { MediaTypeOptions, launchImageLibraryAsync } from "expo-image-picker";
 import { NavigationProp } from "@react-navigation/native";
+import { MediaTypeOptions, launchImageLibraryAsync } from "expo-image-picker";
+import React, { useState } from "react";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
+import Button from "../../shared/Button";
 
 export default function ChooseImages({
   navigation,

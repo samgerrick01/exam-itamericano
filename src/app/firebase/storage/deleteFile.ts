@@ -1,12 +1,12 @@
-import { collection, deleteDoc, doc, getFirestore } from 'firebase/firestore';
-import app from '../../../../firebaseConfig';
-import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { getAuth } from "firebase/auth";
+import { collection, deleteDoc, doc, getFirestore } from "firebase/firestore";
+import { deleteObject, getStorage, ref } from "firebase/storage";
+import app from "../../../../firebaseConfig";
 
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const mediaCollections = collection(db, 'media');
+const mediaCollections = collection(db, "media");
 
 export async function deleteFileFromDB(docId: string, fileName: string) {
   const user = getAuth(app).currentUser;

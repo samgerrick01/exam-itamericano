@@ -1,6 +1,6 @@
-import { createContext } from 'react';
-import { TodoItemProps } from '../todo/TodoItem';
-import { MediaItemShape } from '../../../App';
+import { createContext } from "react";
+import { MediaItemShape } from "../../../App";
+import { TodoItemProps } from "../todo/TodoItem";
 
 interface DataContextProps {
   tasks: TodoItemProps[];

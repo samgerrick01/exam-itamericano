@@ -1,3 +1,7 @@
+import { MaterialIcons } from "@expo/vector-icons";
+import { NavigationProp, StackActions } from "@react-navigation/native";
+import { getAuth } from "firebase/auth";
+import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -8,38 +12,39 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
-import { getAuth } from "firebase/auth";
 import app from "../../firebaseConfig";
-import { MaterialIcons } from "@expo/vector-icons";
-import Empty from "./todo/Empty";
-import TodoItem from "./todo/TodoItem";
-import { sortItemsByCompletion } from "./utils/SortTodos";
-import { DataContext } from "./utils/Context";
 import { createTodoTask } from "./firebase/firestore/create";
 import { fetchOnlyMyTodoList } from "./firebase/firestore/read";
 import { updateItemText } from "./firebase/firestore/update";
-import { StackActions, NavigationProp } from "@react-navigation/native";
+import Empty from "./todo/Empty";
+import TodoItem from "./todo/TodoItem";
+import { DataContext } from "./utils/Context";
+import { sortItemsByPrio } from "./utils/SortTodos";
 
 export interface LoginProps {
   navigation: NavigationProp<any>;
 }
 
 export default function HomeScreen({ navigation }: LoginProps) {
+  //firebase auth
   const user = getAuth(app).currentUser;
+
+  //context
   const { tasks, setTasks } = useContext(DataContext);
+
+  //local state
   const [loading, setLoading] = useState(false);
-
   const [getLoading, setGetLoading] = useState<boolean>(false);
-
   const [todo, setTodo] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editID, setEditID] = useState<string>("");
 
+  //memoized value
   const sortedTodos = useMemo(() => {
-    return sortItemsByCompletion(tasks);
+    return sortItemsByPrio(tasks);
   }, [tasks]);
 
+  // add and edit task function
   async function addToList() {
     if (todo.length < 3) {
       return;
@@ -88,6 +93,7 @@ export default function HomeScreen({ navigation }: LoginProps) {
     }
   }
 
+  //logout function
   const logOut = () => {
     Alert.alert("Log Out", "Are you sure you want to log out?", [
       {
@@ -104,6 +110,7 @@ export default function HomeScreen({ navigation }: LoginProps) {
     ]);
   };
 
+  //fetch data from firestore
   async function getMyTodosInDB() {
     setGetLoading(true);
     if (!user) return;
@@ -112,18 +119,15 @@ export default function HomeScreen({ navigation }: LoginProps) {
     setTasks(myTodos);
     setGetLoading(false);
   }
+
+  //useLayoutEffect to fetch data from firestore
   useLayoutEffect(() => {
     getMyTodosInDB();
   }, []);
+
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
+      <View style={styles.headerWrapper}>
         <Text style={styles.greeting}>
           Hello,{" "}
           <Text style={{ color: "teal" }}>{user?.displayName || "user"}</Text>
@@ -132,10 +136,11 @@ export default function HomeScreen({ navigation }: LoginProps) {
           Log Out
         </Text>
       </View>
+      <Text>{`Total task: ${sortedTodos.length}`}</Text>
       <View style={styles.row}>
         <TextInput
           style={styles.input}
-          placeholder="Let's add something new..."
+          placeholder="Add some task here..."
           onEndEditing={addToList}
           returnKeyType="done"
           onChangeText={setTodo}
@@ -220,10 +225,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "rgba(0,0,0,0.6)",
     fontStyle: "italic",
+    textTransform: "capitalize",
   },
   container: {
     flex: 1,
     paddingTop: 40,
     paddingHorizontal: 10,
+  },
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

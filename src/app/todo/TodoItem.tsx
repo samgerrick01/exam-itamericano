@@ -1,3 +1,6 @@
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Timestamp } from "firebase/firestore";
+import React, { useContext, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -6,13 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
-import { Timestamp } from "firebase/firestore";
-import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
-import { DataContext } from "../utils/Context";
-import { updatePrioItem, updateStatusItem } from "../firebase/firestore/update";
 import { deleteMyTodoItem } from "../firebase/firestore/delete";
+import { updatePrioItem, updateStatusItem } from "../firebase/firestore/update";
+import { DataContext } from "../utils/Context";
 
+//interface for the todo item
 export interface TodoItemProps {
   createdAt?: Timestamp;
   completedAt?: Timestamp | string;
@@ -27,6 +28,7 @@ export interface TodoItemProps {
 }
 
 export default function TodoItem({ data }: { data: TodoItemProps }) {
+  //destructure the props
   const {
     todo,
     isCompleted,
@@ -36,11 +38,15 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
     setTodo,
     setEditID,
   } = data;
+
+  //local state
   const [priority, setPriority] = useState<boolean>(isPriority);
   const [completed, setCompleted] = useState<boolean>(isCompleted);
 
+  //context
   const { tasks, setTasks } = useContext(DataContext);
 
+  //check as priority function
   const checkAsPrio = async () => {
     try {
       const index = tasks.findIndex((task) => task.docId === docId);
@@ -54,6 +60,7 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
     }
   };
 
+  //check as completed function
   const checkAsCompleted = async () => {
     try {
       const index = tasks.findIndex((task) => task.docId === docId);
@@ -67,12 +74,14 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
     }
   };
 
+  //edit function
   const handleEdit = () => {
     setTodo(todo);
     setIsEdit(true);
     setEditID(docId);
   };
 
+  //delete function
   const deleteMyTodo = async () => {
     try {
       const updatedTasks = tasks.filter((t) => t.docId !== docId);
@@ -114,8 +123,12 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
           }}
         >
           <Text
+            numberOfLines={1}
             onPress={checkAsCompleted}
-            style={isCompleted && { textDecorationLine: "line-through" }}
+            style={{
+              ...(isCompleted && { textDecorationLine: "line-through" }),
+              ...styles.todo,
+            }}
           >
             {todo}
           </Text>
@@ -132,7 +145,9 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
 }
 
 const styles = StyleSheet.create({
-  todo: {},
+  todo: {
+    fontSize: 18,
+  },
 
   row: {
     flexDirection: "row",

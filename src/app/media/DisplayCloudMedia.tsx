@@ -1,3 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
+import { getAuth } from "firebase/auth";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -5,17 +8,14 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { CommonScreenProps } from '../upload/Preview';
-import MediaItem from './MediaItem';
-import { fetchItemsBasedOnType } from '../firebase/firestore/read';
-import { getAuth } from 'firebase/auth';
-import app from '../../../firebaseConfig';
-import { MediaItemShape } from '../../../App';
-import { DataContext } from '../utils/Context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MediaItemShape } from "../../../App";
+import app from "../../../firebaseConfig";
+import { fetchItemsBasedOnType } from "../firebase/firestore/read";
+import { CommonScreenProps } from "../upload/Preview";
+import { DataContext } from "../utils/Context";
+import MediaItem from "./MediaItem";
 
 export default function DisplayCloudMedia({
   navigation,
@@ -24,17 +24,17 @@ export default function DisplayCloudMedia({
   const user = getAuth(app).currentUser;
   const insets = useSafeAreaInsets();
 
-  const [activeTab, setActiveTab] = useState<'image' | 'video'>('image');
+  const [activeTab, setActiveTab] = useState<"image" | "video">("image");
 
   const [loading, setLoading] = useState(false);
 
   const navItems: {
-    name: 'images' | 'videos';
+    name: "images" | "videos";
     key: string;
-    type: 'image' | 'video';
+    type: "image" | "video";
   }[] = [
-    { name: 'images', key: 'cloud-images', type: 'image' },
-    { name: 'videos', key: 'cloud-videos', type: 'video' },
+    { name: "images", key: "cloud-images", type: "image" },
+    { name: "videos", key: "cloud-videos", type: "video" },
   ];
   const goBack = () => navigation.goBack();
 
@@ -51,7 +51,7 @@ export default function DisplayCloudMedia({
       })) as MediaItemShape[];
       return setMedia(data);
     } catch (error: any) {
-      Alert.alert('Something went wrong', error.message);
+      Alert.alert("Something went wrong", error.message);
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function DisplayCloudMedia({
                 styles.navButton,
                 {
                   backgroundColor:
-                    activeTab === nI.type ? 'white' : 'transparent',
+                    activeTab === nI.type ? "white" : "transparent",
                 },
               ]}
             >
@@ -107,9 +107,9 @@ export default function DisplayCloudMedia({
         ItemSeparatorComponent={() => (
           <View
             style={{
-              width: '100%',
+              width: "100%",
               height: 1.5,
-              backgroundColor: '#ddd',
+              backgroundColor: "#ddd",
               marginVertical: 20,
             }}
           />
@@ -117,9 +117,9 @@ export default function DisplayCloudMedia({
         ListEmptyComponent={
           <Text
             style={{
-              textAlign: 'center',
-              marginTop: '30%',
-              color: 'silver',
+              textAlign: "center",
+              marginTop: "30%",
+              color: "silver",
             }}
           >
             No {activeTab} in your storage bucket.
@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
   fab: {
     width: 50,
     height: 50,
-    backgroundColor: 'teal',
-    position: 'absolute',
+    backgroundColor: "teal",
+    position: "absolute",
     bottom: 20,
     right: 20,
     borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   list: {
     paddingHorizontal: 20,
@@ -148,54 +148,54 @@ const styles = StyleSheet.create({
   },
   tab: {
     fontSize: 15,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-    color: 'gray',
+    fontWeight: "600",
+    textTransform: "capitalize",
+    color: "gray",
   },
   navButton: {
-    width: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    width: "50%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     padding: 10,
     borderRadius: 8,
   },
   nav: {
     padding: 8,
     borderRadius: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    width: '65%',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    width: "65%",
   },
   navContainer: {
     marginVertical: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
   back: {
-    position: 'absolute',
+    position: "absolute",
     left: 15,
   },
   routeName: {
-    textTransform: 'capitalize',
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: 'teal',
-    fontWeight: '600',
+    textTransform: "capitalize",
+    alignSelf: "center",
+    textAlign: "center",
+    color: "teal",
+    fontWeight: "600",
     fontSize: 16,
   },
   header: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingBottom: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     borderBottomWidth: 1.5,
-    borderBottomColor: '#f5f5f5',
+    borderBottomColor: "#f5f5f5",
   },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     flex: 1,
   },
 });

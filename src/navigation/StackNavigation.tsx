@@ -1,11 +1,11 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from '../auth/Login';
-import Register from '../auth/Register';
-import HomeScreen from '../app/HomeScreen';
-import ChooseImages from '../app/upload/ChooseImages';
-import Preview from '../app/upload/Preview';
-import DisplayCloudMedia from '../app/media/DisplayCloudMedia';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import HomeScreen from "../app/HomeScreen";
+import DisplayCloudMedia from "../app/media/DisplayCloudMedia";
+import ChooseImages from "../app/upload/ChooseImages";
+import Preview from "../app/upload/Preview";
+import Login from "../auth/Login";
+import Register from "../auth/Register";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +21,7 @@ export default function StackNavigation() {
       <Stack.Screen
         name="register"
         component={Register}
-        options={{ presentation: 'modal' }}
+        options={{ presentation: "modal" }}
       />
 
       <Stack.Screen name="home" component={HomeScreen} />

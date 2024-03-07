@@ -11,9 +11,9 @@ import {
   View,
 } from "react-native";
 
+import { NavigationProp, StackActions } from "@react-navigation/native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import app from "../../firebaseConfig";
-import { NavigationProp, StackActions } from "@react-navigation/native";
 
 export interface LoginProps {
   navigation: NavigationProp<any>;

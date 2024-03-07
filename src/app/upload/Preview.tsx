@@ -1,3 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
+import { NavigationProp, RouteProp } from "@react-navigation/native";
+import { ResizeMode, Video } from "expo-av";
+import { ImagePickerAsset } from "expo-image-picker";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -8,26 +13,20 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import React, { useRef, useState } from 'react';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
-import { ImagePickerAsset } from 'expo-image-picker';
-import { ResizeMode, Video } from 'expo-av';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Button from '../../shared/Button';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Button from "../../shared/Button";
 import {
-  CloudImage,
   bulkMediaUpload,
   saveUploadedMediaData,
-} from '../firebase/storage/uploadMedia';
+} from "../firebase/storage/uploadMedia";
 
 export interface CommonScreenProps {
   navigation: NavigationProp<any>;
   route: RouteProp<any>;
 }
 
-const { width, height } = Dimensions.get('screen');
+const { width, height } = Dimensions.get("screen");
 
 export default function Preview({ navigation, route }: CommonScreenProps) {
   const assets = route.params as ImagePickerAsset[];
@@ -52,14 +51,14 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
       setLoading(true);
       const cloudImages = await bulkMediaUpload(assets);
       await saveUploadedMediaData(cloudImages);
-      Alert.alert('Great', 'Media uploaded successfully', [
+      Alert.alert("Great", "Media uploaded successfully", [
         {
-          text: 'Okay',
-          onPress: () => navigation.navigate('display cloud media'),
+          text: "Okay",
+          onPress: () => navigation.navigate("display cloud media"),
         },
       ]);
     } catch (error: any) {
-      Alert.alert('Something went wrong', error.message);
+      Alert.alert("Something went wrong", error.message);
     } finally {
       setLoading(false);
     }
@@ -72,16 +71,16 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
           styles.header,
           {
             paddingTop: insets.top || 15,
-            justifyContent: 'space-between',
+            justifyContent: "space-between",
           },
           styles.row,
         ]}
       >
         <Pressable style={styles.row} onPress={goBack}>
           <Ionicons name="chevron-back" size={24} color="teal" />
-          <Text style={{ color: 'teal', fontWeight: '600' }}>Choose files</Text>
+          <Text style={{ color: "teal", fontWeight: "600" }}>Choose files</Text>
         </Pressable>
-        <View style={{ width: '30%', height: 40 }}>
+        <View style={{ width: "30%", height: 40 }}>
           <Button
             containerProps={{
               onPress: uploadMedia,
@@ -90,7 +89,7 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
               children: loading ? (
                 <ActivityIndicator animating={loading} color="#ddd" />
               ) : (
-                'Upload'
+                "Upload"
               ),
             }}
           />
@@ -112,7 +111,7 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         renderItem={({ item, index }) => (
           <View key={item.fileName}>
-            {item.type === 'image' ? (
+            {item.type === "image" ? (
               <Image
                 source={{ uri: item.uri }}
                 width={width}
@@ -122,7 +121,7 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
             ) : (
               <Video
                 source={{ uri: item.uri }}
-                style={{ width, height: height - 250, backgroundColor: '#ddd' }}
+                style={{ width, height: height - 250, backgroundColor: "#ddd" }}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 shouldPlay={active === index}
@@ -147,13 +146,13 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
               width: 110,
               height: 110,
               borderWidth: 3,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               borderRadius: 4,
-              borderColor: active === index ? 'teal' : 'transparent',
+              borderColor: active === index ? "teal" : "transparent",
             }}
           >
-            {item.type === 'image' ? (
+            {item.type === "image" ? (
               <Image
                 source={{ uri: item.uri }}
                 width={100}
@@ -163,7 +162,7 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
             ) : (
               <Video
                 source={{ uri: item.uri }}
-                style={{ width: 100, height: 100, backgroundColor: '#ddd' }}
+                style={{ width: 100, height: 100, backgroundColor: "#ddd" }}
                 resizeMode={ResizeMode.COVER}
               />
             )}
@@ -178,8 +177,8 @@ export default function Preview({ navigation, route }: CommonScreenProps) {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   header: {
     paddingHorizontal: 15,

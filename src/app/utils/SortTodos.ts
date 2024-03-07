@@ -6,7 +6,7 @@ interface ITask {
   ownerId: string;
 }
 
-export function sortItemsByCompletion(arr: ITask[]) {
+export function sortItemsByPrio(arr: ITask[]) {
   return arr.sort((a, b) => {
     if (a.isPriority === b.isPriority) {
       return a.todo.localeCompare(b.todo);
