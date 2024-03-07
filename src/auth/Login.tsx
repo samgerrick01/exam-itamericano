@@ -44,7 +44,7 @@ export default function Login({ navigation }: LoginProps) {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Image
-        source={require("../../assets/firebase.png")}
+        source={require("../../assets/todo_banner.jpg")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -58,6 +58,7 @@ export default function Login({ navigation }: LoginProps) {
         style={[styles.input, { marginTop: 15 }]}
         placeholder="Password"
         onChangeText={setPassword}
+        secureTextEntry={true}
       />
 
       <TouchableOpacity style={styles.button} onPress={registerAndLogin}>
@@ -98,8 +99,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     marginBottom: 40,
-    width: 80,
-    height: 80,
+    width: 380,
+    height: 200,
     alignSelf: "center",
   },
   button: {
