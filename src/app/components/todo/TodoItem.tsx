@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Modal from "../components/reusable-modal";
-import { deleteMyTodoItem } from "../firebase/firestore/delete";
-import { updatePrioItem, updateStatusItem } from "../firebase/firestore/update";
-import { DataContext } from "../utils/Context";
-import { IModalProps } from "../utils/interface";
+import Modal from "../reusable-modal";
+import { deleteMyTodoItem } from "../../firebase/delete";
+import { updatePrioItem, updateStatusItem } from "../../firebase/update";
+import { DataContext } from "../../utils/Context";
+import { IModalProps } from "../../utils/interface";
 
 //interface for the todo item
 export interface TodoItemProps {

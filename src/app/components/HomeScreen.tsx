@@ -11,16 +11,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import app from "../../firebaseConfig";
-import Modal from "./components/reusable-modal";
-import { createTodoTask } from "./firebase/firestore/create";
-import { fetchOnlyMyTodoList } from "./firebase/firestore/read";
-import { updateItemText } from "./firebase/firestore/update";
+import app from "../../../firebaseConfig";
+import Modal from "./reusable-modal";
+import { createTodoTask } from "../firebase/create";
+import { fetchOnlyMyTodoList } from "../firebase/read";
+import { updateItemText } from "../firebase/update";
 import Empty from "./todo/Empty";
 import TodoItem from "./todo/TodoItem";
-import { DataContext } from "./utils/Context";
-import { sortItemsByPrio } from "./utils/SortTodos";
-import { IModalProps } from "./utils/interface";
+import { DataContext } from "../utils/Context";
+import { sortItemsByPrio } from "../utils/SortTodos";
+import { IModalProps } from "../utils/interface";
 
 export interface LoginProps {
   navigation: NavigationProp<any>;
