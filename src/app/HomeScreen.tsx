@@ -18,13 +18,23 @@ import { sortItemsByCompletion } from "./utils/SortTodos";
 import { DataContext } from "./utils/Context";
 import { createTodoTask } from "./firebase/firestore/create";
 import { fetchOnlyMyTodoList } from "./firebase/firestore/read";
+import { updateItemText } from "./firebase/firestore/update";
+import { StackActions, NavigationProp } from "@react-navigation/native";
 
-export default function HomeScreen() {
+export interface LoginProps {
+  navigation: NavigationProp<any>;
+}
+
+export default function HomeScreen({ navigation }: LoginProps) {
   const user = getAuth(app).currentUser;
   const { tasks, setTasks } = useContext(DataContext);
   const [loading, setLoading] = useState(false);
 
-  const [todo, setTodo] = useState("");
+  const [getLoading, setGetLoading] = useState<boolean>(false);
+
+  const [todo, setTodo] = useState<string>("");
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [editID, setEditID] = useState<string>("");
 
   const sortedTodos = useMemo(() => {
     return sortItemsByCompletion(tasks);
@@ -34,45 +44,94 @@ export default function HomeScreen() {
     if (todo.length < 3) {
       return;
     }
-    try {
-      setLoading(true);
-      if (!user) return;
-      const addedTask = await createTodoTask({
-        todo,
-        ownerId: user.uid,
-        isCompleted: false,
-        isPriority: false,
-      });
 
-      const todoItem = {
-        completed: false,
-        todo,
-        ownerId: user?.uid,
-        docId: addedTask.id,
-      };
-      setTasks(() => [todoItem, ...tasks]);
-      setTodo("");
-    } catch (error) {
-    } finally {
-      setLoading(false);
+    if (isEdit && editID && todo !== "") {
+      try {
+        setLoading(true);
+        const index = tasks.findIndex((task) => task.docId === editID);
+        const updatedTasks = [...tasks];
+        updatedTasks[index].todo = todo;
+        setTasks(updatedTasks);
+
+        await updateItemText(editID, todo);
+        setIsEdit(false);
+        setEditID("");
+        setTodo("");
+      } catch (error: any) {
+        Alert.alert("Something went wrong", error.message);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      try {
+        setLoading(true);
+        if (!user) return;
+        const addedTask = await createTodoTask({
+          todo,
+          ownerId: user.uid,
+          isCompleted: false,
+          isPriority: false,
+        });
+
+        const todoItem = {
+          completed: false,
+          todo,
+          ownerId: user?.uid,
+          docId: addedTask.id,
+        };
+        setTasks(() => [todoItem, ...tasks]);
+        setTodo("");
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
     }
   }
 
+  const logOut = () => {
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      {
+        text: "Yes",
+        onPress: () => {
+          getAuth(app).signOut();
+          navigation.dispatch(StackActions.replace("login"));
+        },
+      },
+      {
+        text: "No",
+        onPress: () => {},
+      },
+    ]);
+  };
+
   async function getMyTodosInDB() {
+    setGetLoading(true);
     if (!user) return;
     const result = await fetchOnlyMyTodoList(user.uid);
     const myTodos = result.docs.map((d) => ({ docId: d.id, ...d.data() }));
     setTasks(myTodos);
+    setGetLoading(false);
   }
   useLayoutEffect(() => {
     getMyTodosInDB();
   }, []);
   return (
     <View style={styles.container}>
-      <Text style={styles.greeting}>
-        Hello,{" "}
-        <Text style={{ color: "teal" }}>{user?.displayName || "user"}</Text>
-      </Text>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={styles.greeting}>
+          Hello,{" "}
+          <Text style={{ color: "teal" }}>{user?.displayName || "user"}</Text>
+        </Text>
+        <Text onPress={logOut} style={styles.greeting}>
+          Log Out
+        </Text>
+      </View>
       <View style={styles.row}>
         <TextInput
           style={styles.input}
@@ -89,22 +148,36 @@ export default function HomeScreen() {
         >
           {loading ? (
             <ActivityIndicator animating={loading} color={"white"} />
+          ) : isEdit ? (
+            <MaterialIcons name="update" size={30} color="white" />
           ) : (
             <MaterialIcons name="add" size={30} color="white" />
           )}
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={sortedTodos}
-        renderItem={({ item, index }) => (
-          <TodoItem data={item} key={item.docId} />
-        )}
-        ListEmptyComponent={Empty}
-        contentContainerStyle={styles.content}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        showsVerticalScrollIndicator={false}
-      />
+      {getLoading && (
+        <ActivityIndicator
+          style={{ marginTop: 100 }}
+          size="large"
+          color="teal"
+        />
+      )}
+      {!getLoading && (
+        <FlatList
+          data={sortedTodos}
+          renderItem={({ item, index }) => (
+            <TodoItem
+              data={{ ...item, setTodo, setIsEdit, setEditID }}
+              key={item.docId}
+            />
+          )}
+          ListEmptyComponent={Empty}
+          contentContainerStyle={styles.content}
+          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }

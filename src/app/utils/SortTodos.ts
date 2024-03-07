@@ -1,11 +1,17 @@
-export function sortItemsByCompletion(arr: any[]) {
+interface ITask {
+  docId: string;
+  todo: string;
+  isCompleted: boolean;
+  isPriority: boolean;
+  ownerId: string;
+}
+
+export function sortItemsByCompletion(arr: ITask[]) {
   return arr.sort((a, b) => {
-    if (a.isCompleted && !b.isCompleted) {
-      return 1; // a should come after b
-    } else if (!a.isCompleted && b.isCompleted) {
-      return -1; // a should come before b
+    if (a.isPriority === b.isPriority) {
+      return a.todo.localeCompare(b.todo);
     } else {
-      return 0; // leave them unchanged
+      return a.isPriority ? -1 : 1;
     }
   });
 }

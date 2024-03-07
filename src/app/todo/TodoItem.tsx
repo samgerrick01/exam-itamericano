@@ -5,13 +5,13 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import React, { useContext, useState } from 'react';
-import { Timestamp } from 'firebase/firestore';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { DataContext } from '../utils/Context';
-import { updateTodoItem } from '../firebase/firestore/update';
-import { deleteMyTodoItem } from '../firebase/firestore/delete';
+} from "react-native";
+import React, { useContext, useState } from "react";
+import { Timestamp } from "firebase/firestore";
+import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
+import { DataContext } from "../utils/Context";
+import { updatePrioItem, updateStatusItem } from "../firebase/firestore/update";
+import { deleteMyTodoItem } from "../firebase/firestore/delete";
 
 export interface TodoItemProps {
   createdAt?: Timestamp;
@@ -19,14 +19,40 @@ export interface TodoItemProps {
   docId: string;
   todo: string;
   isCompleted: boolean;
+  isPriority: boolean;
   ownerId: string;
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  setTodo: React.Dispatch<React.SetStateAction<string>>;
+  setEditID: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function TodoItem({ data }: { data: TodoItemProps }) {
-  const { todo, isCompleted, docId } = data;
+  const {
+    todo,
+    isCompleted,
+    docId,
+    isPriority,
+    setIsEdit,
+    setTodo,
+    setEditID,
+  } = data;
+  const [priority, setPriority] = useState<boolean>(isPriority);
   const [completed, setCompleted] = useState<boolean>(isCompleted);
 
   const { tasks, setTasks } = useContext(DataContext);
+
+  const checkAsPrio = async () => {
+    try {
+      const index = tasks.findIndex((task) => task.docId === docId);
+      const updatedTasks = [...tasks];
+      updatedTasks[index].isPriority = !updatedTasks[index].isPriority;
+      setTasks(updatedTasks);
+      setPriority(!priority);
+      await updatePrioItem(docId, !isPriority);
+    } catch (error: any) {
+      Alert.alert("Something went wrong", error.message);
+    }
+  };
 
   const checkAsCompleted = async () => {
     try {
@@ -35,10 +61,16 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       updatedTasks[index].isCompleted = !updatedTasks[index].isCompleted;
       setTasks(updatedTasks);
       setCompleted(!completed);
-      await updateTodoItem(docId, !isCompleted);
+      await updateStatusItem(docId, !isCompleted);
     } catch (error: any) {
-      Alert.alert('Something went wrong', error.message);
+      Alert.alert("Something went wrong", error.message);
     }
+  };
+
+  const handleEdit = () => {
+    setTodo(todo);
+    setIsEdit(true);
+    setEditID(docId);
   };
 
   const deleteMyTodo = async () => {
@@ -47,7 +79,7 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       setTasks(updatedTasks);
       await deleteMyTodoItem(docId);
     } catch (error: any) {
-      Alert.alert('Something went wrong', error.message);
+      Alert.alert("Something went wrong", error.message);
     }
   };
 
@@ -57,23 +89,43 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
         style={styles.row}
         onLongPress={() => {
           Alert.alert(
-            'Alert',
-            'You are trying to delete this todo, Would you like to continue?',
+            "Alert",
+            "You are trying to delete this todo, Would you like to continue?",
             [
-              { text: 'Cancel', onPress: () => null },
-              { text: 'Delete', style: 'destructive', onPress: deleteMyTodo },
+              { text: "Cancel", onPress: () => null },
+              { text: "Delete", style: "destructive", onPress: deleteMyTodo },
             ]
           );
         }}
       >
-        <Pressable onPress={checkAsCompleted}>
+        <Pressable onPress={checkAsPrio}>
           <MaterialCommunityIcons
-            name={completed ? 'checkbox-marked' : 'checkbox-blank-outline'}
+            name={priority ? "checkbox-marked" : "checkbox-blank-outline"}
             size={28}
-            color={completed ? 'teal' : 'gray'}
+            color={priority ? "teal" : "gray"}
           />
         </Pressable>
-        <Text style={styles.todo}>{todo}</Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "90%",
+          }}
+        >
+          <Text
+            onPress={checkAsCompleted}
+            style={isCompleted && { textDecorationLine: "line-through" }}
+          >
+            {todo}
+          </Text>
+          <FontAwesome
+            onPress={handleEdit}
+            name="edit"
+            size={24}
+            color="gray"
+          />
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -83,12 +135,12 @@ const styles = StyleSheet.create({
   todo: {},
 
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 12,
     borderRadius: 4,
   },
