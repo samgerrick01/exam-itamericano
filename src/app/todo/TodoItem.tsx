@@ -136,7 +136,7 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
             onPress={handleEdit}
             name="edit"
             size={24}
-            color="gray"
+            color="black"
           />
         </View>
       </TouchableOpacity>

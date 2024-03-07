@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation }: LoginProps) {
   // add and edit task function
   async function addToList() {
     if (todo.length < 3) {
-      return;
+      return alert("Task must be at least 3 characters long");
     }
 
     if (isEdit && editID && todo !== "") {
@@ -136,7 +136,7 @@ export default function HomeScreen({ navigation }: LoginProps) {
           Log Out
         </Text>
       </View>
-      <Text>{`Total task: ${sortedTodos.length}`}</Text>
+      <Text>{`Total task: ${getLoading ? "" : sortedTodos.length}`}</Text>
       <View style={styles.row}>
         <TextInput
           style={styles.input}

@@ -31,8 +31,7 @@ export default function Login({ navigation }: LoginProps) {
       const auth = getAuth(app);
       await signInWithEmailAndPassword(auth, email, password);
       setLoading(false);
-      navigation.dispatch(StackActions.replace("home")); // use this when following the crud video
-      // navigation.dispatch(StackActions.replace('choose image')); // use this for storage video
+      navigation.dispatch(StackActions.replace("home"));
       return;
     } catch (error: any) {
       setLoading(false);
