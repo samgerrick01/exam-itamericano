@@ -142,7 +142,11 @@ export default function HomeScreen({ navigation }: LoginProps) {
 
   //useLayoutEffect to fetch data from firestore
   useLayoutEffect(() => {
-    getMyTodosInDB();
+    if (!user) {
+      navigation.dispatch(StackActions.replace("login"));
+    } else {
+      getMyTodosInDB();
+    }
   }, []);
 
   return (
