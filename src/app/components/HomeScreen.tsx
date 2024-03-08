@@ -19,7 +19,7 @@ import { updateItemText } from "../firebase/update";
 import Empty from "./todo/Empty";
 import TodoItem from "./todo/TodoItem";
 import { DataContext } from "../utils/Context";
-import { sortItemsByPrio } from "../utils/SortTodos";
+import { sortItemsByPrio, countCompletedTasks } from "../utils/SortTodos";
 import { IModalProps } from "../utils/interface";
 
 export interface LoginProps {
@@ -161,6 +161,9 @@ export default function HomeScreen({ navigation }: LoginProps) {
         </Text>
       </View>
       <Text>{`Total task: ${getLoading ? "" : sortedTodos.length}`}</Text>
+      <Text>{`Total completed task: ${
+        getLoading ? "" : countCompletedTasks(sortedTodos)
+      }`}</Text>
       <View style={styles.row}>
         <TextInput
           style={styles.input}

@@ -15,3 +15,7 @@ export function sortItemsByPrio(arr: ITask[]) {
     }
   });
 }
+
+export function countCompletedTasks(arr: ITask[]) {
+  return arr.filter((task) => task.isCompleted).length;
+}
