@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 import app from "../../firebaseConfig";
-import Modal from "../app/components/reusable-modal";
+import Modal from "../shared/reusable-modal";
 import { IModalProps } from "../app/utils/interface";
 import { LoginProps } from "./Login";
 

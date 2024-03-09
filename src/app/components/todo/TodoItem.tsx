@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Modal from "../reusable-modal";
+import Modal from "../../../shared/reusable-modal";
 import { deleteMyTodoItem } from "../../firebase/delete";
 import { updatePrioItem, updateStatusItem } from "../../firebase/update";
 import { DataContext } from "../../utils/Context";
@@ -43,8 +43,6 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
   } = data;
 
   //local state
-  const [priority, setPriority] = useState<boolean>(isPriority);
-  const [completed, setCompleted] = useState<boolean>(isCompleted);
 
   //Modal state
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -64,7 +62,6 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       const updatedTasks = [...tasks];
       updatedTasks[index].isPriority = !updatedTasks[index].isPriority;
       setTasks(updatedTasks);
-      setPriority(!priority);
       await updatePrioItem(docId, !isPriority);
     } catch (error: any) {
       setModalData({
@@ -83,7 +80,6 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       const updatedTasks = [...tasks];
       updatedTasks[index].isCompleted = !updatedTasks[index].isCompleted;
       setTasks(updatedTasks);
-      setCompleted(!completed);
       await updateStatusItem(docId, !isCompleted);
       if (!isPriority) return;
       checkAsPrio();

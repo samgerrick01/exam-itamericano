@@ -1,15 +1,10 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { NavigationProp, StackActions } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import React, {
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Button,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -19,7 +14,7 @@ import {
   View,
 } from "react-native";
 import app from "../../../firebaseConfig";
-import Modal from "./reusable-modal";
+import Modal from "../../shared/reusable-modal";
 import { createTodoTask } from "../firebase/create";
 import { fetchOnlyMyTodoList } from "../firebase/read";
 import { updateItemText } from "../firebase/update";
@@ -28,6 +23,7 @@ import TodoItem from "./todo/TodoItem";
 import { DataContext } from "../utils/Context";
 import { sortItemsByPrio, countCompletedTasks } from "../utils/SortTodos";
 import { IModalProps } from "../utils/interface";
+import FilteredBtns from "@/src/shared/filter-btns";
 
 export interface LoginProps {
   navigation: NavigationProp<any>;
@@ -46,6 +42,7 @@ export default function HomeScreen({ navigation }: LoginProps) {
   const [todo, setTodo] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editID, setEditID] = useState<string>("");
+  const [tab, setTab] = useState<"All" | "Todo" | "Finished">("All");
 
   //Modal state
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -59,6 +56,17 @@ export default function HomeScreen({ navigation }: LoginProps) {
   const sortedTodos = useMemo(() => {
     return sortItemsByPrio(tasks);
   }, [tasks]);
+
+  //filtered tasks
+  const filteredTasks = useMemo(() => {
+    if (tab === "All") {
+      return sortedTodos;
+    } else if (tab === "Todo") {
+      return sortedTodos.filter((task) => !task.isCompleted);
+    } else {
+      return sortedTodos.filter((task) => task.isCompleted);
+    }
+  }, [sortedTodos, tab]);
 
   // add and edit task function
   async function addToList() {
@@ -197,10 +205,12 @@ export default function HomeScreen({ navigation }: LoginProps) {
           color="teal"
         />
       )}
+      {!getLoading && <FilteredBtns setTab={setTab} tab={tab} />}
+
       {!getLoading && (
         <SafeAreaView style={{ flex: 1, marginVertical: 10 }}>
           <FlatList
-            data={sortedTodos}
+            data={filteredTasks}
             renderItem={({ item, index }) => (
               <TodoItem
                 data={{ ...item, setTodo, setIsEdit, setEditID }}
@@ -269,7 +279,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 40,
     paddingHorizontal: 10,
   },
   headerWrapper: {

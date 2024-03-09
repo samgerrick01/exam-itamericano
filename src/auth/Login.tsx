@@ -15,7 +15,7 @@ import {
 import { NavigationProp, StackActions } from "@react-navigation/native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import app from "../../firebaseConfig";
-import Modal from "../app/components/reusable-modal";
+import Modal from "../shared/reusable-modal";
 import { IModalProps } from "../app/utils/interface";
 
 export interface LoginProps {
