@@ -1,10 +1,17 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { NavigationProp, StackActions } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
+import React, {
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   FlatList,
+  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -55,13 +62,8 @@ export default function HomeScreen({ navigation }: LoginProps) {
 
   // add and edit task function
   async function addToList() {
-    if (todo.length < 3) {
-      setModalData({
-        title: "Ooops!",
-        children: "Task must be at least 3 characters long.",
-        confirmModal: false,
-      });
-      setOpenModal(true);
+    if (todo.length === 0) {
+      return;
     } else if (isEdit && editID && todo !== "") {
       try {
         setLoading(true);
@@ -196,21 +198,24 @@ export default function HomeScreen({ navigation }: LoginProps) {
         />
       )}
       {!getLoading && (
-        <FlatList
-          data={sortedTodos}
-          renderItem={({ item, index }) => (
-            <TodoItem
-              data={{ ...item, setTodo, setIsEdit, setEditID }}
-              key={item.docId}
-            />
-          )}
-          ListEmptyComponent={Empty}
-          contentContainerStyle={styles.content}
-          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          showsVerticalScrollIndicator={false}
-          onRefresh={getMyTodosInDB}
-          refreshing={getLoading}
-        />
+        <SafeAreaView style={{ flex: 1, marginVertical: 10 }}>
+          <FlatList
+            data={sortedTodos}
+            renderItem={({ item, index }) => (
+              <TodoItem
+                data={{ ...item, setTodo, setIsEdit, setEditID }}
+                key={item.docId}
+              />
+            )}
+            ListEmptyComponent={Empty}
+            contentContainerStyle={styles.content}
+            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            showsVerticalScrollIndicator={false}
+            onRefresh={getMyTodosInDB}
+            refreshing={getLoading}
+            keyExtractor={(item) => item.docId}
+          />
+        </SafeAreaView>
       )}
       <Modal
         props={{
@@ -261,7 +266,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "rgba(0,0,0,0.6)",
     fontStyle: "italic",
-    textTransform: "capitalize",
   },
   container: {
     flex: 1,

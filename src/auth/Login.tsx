@@ -8,6 +8,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import { NavigationProp, StackActions } from "@react-navigation/native";
@@ -63,57 +65,62 @@ export default function Login({ navigation }: LoginProps) {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Image
-        source={require("../../assets/todo_banner.jpg")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={setEmail}
-        autoComplete="off"
-      />
-      <TextInput
-        style={[styles.input, { marginTop: 15 }]}
-        placeholder="Password"
-        onChangeText={setPassword}
-        secureTextEntry={true}
-      />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Image
+          source={require("../../assets/todo_banner.jpg")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={setEmail}
+          autoComplete="off"
+        />
+        <TextInput
+          style={[styles.input, { marginTop: 15 }]}
+          placeholder="Password"
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={registerAndLogin}>
-        {loading ? (
-          <ActivityIndicator
-            size={"small"}
-            color={"white"}
-            animating={loading}
-          />
-        ) : (
-          <Text style={{ color: "white" }}>Login</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={registerAndLogin}>
+          {loading ? (
+            <ActivityIndicator
+              size={"small"}
+              color={"white"}
+              animating={loading}
+            />
+          ) : (
+            <Text style={{ color: "white" }}>Login</Text>
+          )}
+        </TouchableOpacity>
 
-      <View style={styles.register}>
-        <Text style={styles.link}>Don't have an account? </Text>
-        <Text
-          style={[styles.link, { color: "teal" }]}
-          onPress={() => navigation.navigate("register")}
-        >
-          Register
-        </Text>
+        <View style={styles.register}>
+          <Text style={styles.link}>Don't have an account? </Text>
+          <Text
+            style={[styles.link, { color: "teal" }]}
+            onPress={() => navigation.navigate("register")}
+          >
+            Register
+          </Text>
+        </View>
+        <Modal
+          props={{
+            openModal,
+            children: modalData.children,
+            title: modalData.title,
+            setOpenModal,
+            confirmModal: modalData.confirmModal,
+          }}
+        />
       </View>
-      <Modal
-        props={{
-          openModal,
-          children: modalData.children,
-          title: modalData.title,
-          setOpenModal,
-          confirmModal: modalData.confirmModal,
-        }}
-      />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

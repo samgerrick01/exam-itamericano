@@ -23,7 +23,6 @@ export default function StackNavigation() {
         name="register"
         component={Register}
         options={{
-          presentation: "modal",
           title: "Create Account",
           headerTitleAlign: "center",
         }}

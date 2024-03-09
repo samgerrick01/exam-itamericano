@@ -7,6 +7,8 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -71,61 +73,66 @@ export default function Register({ navigation }: LoginProps) {
     }
   }
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../assets/todo_banner.jpg")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/todo_banner.jpg")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={setEmail}
-        inputMode="email"
-        autoCapitalize={"none"}
-      />
-      <TextInput
-        style={[styles.input, { marginTop: 15 }]}
-        placeholder="Username"
-        onChangeText={setUserName}
-      />
-      <TextInput
-        style={[styles.input, { marginTop: 15 }]}
-        placeholder="Password"
-        onChangeText={setPassword}
-        secureTextEntry={true}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={setEmail}
+          inputMode="email"
+          autoCapitalize={"none"}
+        />
+        <TextInput
+          style={[styles.input, { marginTop: 15 }]}
+          placeholder="Username"
+          onChangeText={setUserName}
+        />
+        <TextInput
+          style={[styles.input, { marginTop: 15 }]}
+          placeholder="Password"
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={registerUser}>
-        {loading ? (
-          <ActivityIndicator
-            size={"small"}
-            color={"white"}
-            animating={loading}
-          />
-        ) : (
-          <Text style={{ color: "white" }}>Register</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={registerUser}>
+          {loading ? (
+            <ActivityIndicator
+              size={"small"}
+              color={"white"}
+              animating={loading}
+            />
+          ) : (
+            <Text style={{ color: "white" }}>Register</Text>
+          )}
+        </TouchableOpacity>
 
-      <View style={styles.register}>
-        <Text style={styles.link}>Have an account already? </Text>
-        <Text
-          style={[styles.link, { color: "teal" }]}
-          onPress={() => navigation.navigate("login")}
-        >
-          login
-        </Text>
+        <View style={styles.register}>
+          <Text style={styles.link}>Have an account already? </Text>
+          <Text
+            style={[styles.link, { color: "teal" }]}
+            onPress={() => navigation.navigate("login")}
+          >
+            login
+          </Text>
+        </View>
+        <Modal
+          props={{
+            openModal,
+            setOpenModal,
+            ...modalData,
+          }}
+        />
       </View>
-      <Modal
-        props={{
-          openModal,
-          setOpenModal,
-          ...modalData,
-        }}
-      />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

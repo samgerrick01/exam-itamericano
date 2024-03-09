@@ -1,4 +1,4 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import { Timestamp } from "firebase/firestore";
 import React, { useContext, useState } from "react";
 import {
@@ -13,6 +13,8 @@ import { deleteMyTodoItem } from "../../firebase/delete";
 import { updatePrioItem, updateStatusItem } from "../../firebase/update";
 import { DataContext } from "../../utils/Context";
 import { IModalProps } from "../../utils/interface";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { RightActions } from "./RightActions";
 
 //interface for the todo item
 export interface TodoItemProps {
@@ -83,6 +85,8 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
       setTasks(updatedTasks);
       setCompleted(!completed);
       await updateStatusItem(docId, !isCompleted);
+      if (!isPriority) return;
+      checkAsPrio();
     } catch (error: any) {
       setModalData({
         title: "Ooops!",
@@ -117,69 +121,74 @@ export default function TodoItem({ data }: { data: TodoItemProps }) {
   };
 
   return (
-    <View style={styles.card}>
-      <TouchableOpacity
-        style={styles.row}
-        onLongPress={() => {
-          setModalData({
-            title: "Delete Todo?",
-            children:
-              "You are trying to delete this todo, Would you like to continue?",
-            confirmModal: true,
-            okAction: deleteMyTodo,
-          });
-          setOpenModal(true);
-        }}
-      >
-        <Pressable onPress={checkAsPrio}>
-          <MaterialCommunityIcons
-            name={priority ? "checkbox-marked" : "checkbox-blank-outline"}
-            size={28}
-            color={priority ? "teal" : "gray"}
-          />
-        </Pressable>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "90%",
-          }}
-        >
-          <Text
-            numberOfLines={1}
-            onPress={checkAsCompleted}
+    <Swipeable
+      friction={3}
+      leftThreshold={80}
+      rightThreshold={40}
+      renderRightActions={(dragAnimatedValue) => (
+        <RightActions
+          dragAnimatedValue={dragAnimatedValue}
+          onDelete={deleteMyTodo}
+          onEdit={handleEdit}
+          onPrio={checkAsPrio}
+          isPriority={isPriority}
+          isCompleted={isCompleted}
+        />
+      )}
+    >
+      <View style={isPriority ? styles.prioCard : styles.card}>
+        <TouchableOpacity style={styles.row}>
+          <Pressable onPress={checkAsCompleted}>
+            <MaterialCommunityIcons
+              name={
+                isCompleted
+                  ? "checkbox-marked-circle-outline"
+                  : "checkbox-blank-circle-outline"
+              }
+              size={28}
+              color={isCompleted ? "teal" : "gray"}
+            />
+          </Pressable>
+          <View
             style={{
-              ...(isCompleted && { textDecorationLine: "line-through" }),
-              ...styles.todo,
+              width: "90%",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
-            {todo}
-          </Text>
-          <FontAwesome
-            onPress={handleEdit}
-            name="edit"
-            size={24}
-            color="black"
-          />
-        </View>
-      </TouchableOpacity>
-      <Modal
-        props={{
-          openModal,
-          setOpenModal,
-          ...modalData,
-        }}
-      />
-    </View>
+            <Text
+              numberOfLines={1}
+              style={[
+                isCompleted && {
+                  color: "lightgray",
+                  textDecorationLine: "line-through",
+                },
+                styles.todoText,
+              ]}
+            >
+              {todo}
+            </Text>
+            {isPriority && (
+              <AntDesign name="exclamationcircle" size={24} color="red" />
+            )}
+          </View>
+        </TouchableOpacity>
+        <Modal
+          props={{
+            openModal,
+            setOpenModal,
+            ...modalData,
+          }}
+        />
+      </View>
+    </Swipeable>
   );
 }
 
 const styles = StyleSheet.create({
-  todo: {
+  todoText: {
     fontSize: 18,
   },
-
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -187,6 +196,13 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "white",
+    padding: 12,
+    borderRadius: 4,
+  },
+  prioCard: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#db5353",
     padding: 12,
     borderRadius: 4,
   },
