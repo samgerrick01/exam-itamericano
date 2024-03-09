@@ -1,5 +1,5 @@
 {
-  "name": "firebaseseries",
+  "name": "exam-itamericano",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -21,7 +21,8 @@
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-safe-area-context": "4.8.2",
-    "react-native-screens": "~3.29.0"
+    "react-native-screens": "~3.29.0",
+    "react-native-gesture-handler": "~2.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
